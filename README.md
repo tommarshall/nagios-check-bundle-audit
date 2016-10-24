@@ -1,5 +1,7 @@
 # Nagios check_bundle_audit
 
+[![Build Status](https://travis-ci.org/tommarshall/nagios-check-bundle-audit.svg?branch=master)](https://travis-ci.org/tommarshall/nagios-check-bundle-audit)
+
 Nagios plugin to monitor ruby applications for security vulnerabilities via [bundler-audit](https://github.com/rubysec/bundler-audit).
 
 ## Installation
