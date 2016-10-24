@@ -1,0 +1,163 @@
+# !/bin/sh
+
+#
+# check_bundle_audit - Nagios plugin for monitoring ruby applications for CVEs
+#                      with bundler-audit, written in shell.
+#
+# Released under the MIT License.
+#
+# https://github.com/tommarshall/nagios-plugin-bundle-audit
+#
+
+VERSION=0.1.0
+OK=0
+WARNING=1
+CRITICAL=2
+UNKNOWN=3
+BUNDLE_AUDIT_PATH='bundle-audit'
+CRITICAL_STATES='high,unknown'
+WARNING_STATES='high,medium,low,unknown'
+OK_STATES='high,medium,low,unknown'
+
+#
+# Output version.
+#
+
+version() {
+  echo "check_bundle_audit $VERSION"
+}
+
+#
+# Output usage information.
+#
+
+usage() {
+  echo 'Usage: ./check_bundle_audit -p <path> [options]'
+}
+
+#
+# Output help information.
+#
+
+help() {
+  usage
+  cat <<-EOF
+
+  Examples:
+    ./check_bundle_audit -p /var/www/app
+
+    ./check_bundle_audit -p /var/www/app -c all
+
+    ./check_bundle_audit -p /var/www/app -c high -w medium,low,unknown
+
+    ./check_bundle_audit -p /var/www/app -b /usr/local/bin/bundle-audit
+
+  Options:
+    -p, --path <path>              path to project
+    -b  --bundle-audit-path        path to `bundle-audit` gem
+    -w, --warning <criticalities>  comma seperated CVE criticalities to treat as WARNING
+    -c, --critical <criticalities> comma seperated CVE criticalities to treat as CRITICAL
+    -v, --version                  output version
+    -h, --help                     output help information
+
+  -c/--critical takes priority over -w/--warning.
+
+  For more information, see https://github.com/tommarshall/nagios-check-bundle-audit
+
+EOF
+}
+
+#
+# Parse argv.
+#
+
+while test $# -ne 0; do
+  ARG=$1; shift
+  case $ARG in
+    -p|--path) PROJECT_PATH=$1; shift ;;
+    -b|--bundle-audit-path) BUNDLE_AUDIT_PATH=$1; shift ;;
+    -w|--warning) WARNING_STATES=$1; shift ;;
+    -c|--critical) CRITICAL_STATES=$1; shift ;;
+    -v|--version) version; exit ;;
+    -h|--help) help; exit ;;
+    *)
+      echo "UNKNOWN: Unrecognised argument: $ARG"
+      usage >&2
+      exit $UNKNOWN
+      ;;
+  esac
+done
+
+#
+# Showtime.
+#
+
+# ensure we have bundle-audit
+if ! command -v $BUNDLE_AUDIT_PATH > /dev/null; then
+  echo 'UNKNOWN: Unable to find bundle-audit'
+  exit $UNKNOWN
+fi
+
+# ensure we have a PROJECT_PATH
+if [ -z "$PROJECT_PATH" ]; then
+  echo 'UNKNOWN: --path/-p not set'
+  exit $UNKNOWN
+fi
+
+# ensure Gemfile.lock exists
+if [ ! -f "${PROJECT_PATH}/Gemfile.lock" ]; then
+  echo 'UNKNOWN: Unable to find Gemfile.lock'
+  exit $UNKNOWN
+fi
+
+# update the ruby advisory db
+$BUNDLE_AUDIT_PATH update >/dev/null 2>&1
+
+# run bundle-audit
+REPORT=$(cd $PROJECT_PATH; $BUNDLE_AUDIT_PATH)
+
+# parse report
+LOW_VULN_COUNT=$(echo "$REPORT" | grep -c 'Criticality: Low')
+MEDIUM_VULN_COUNT=$(echo "$REPORT" | grep -c 'Criticality: Medium')
+HIGH_VULN_COUNT=$(echo "$REPORT" | grep -c 'Criticality: High')
+UNKNOWN_VULN_COUNT=$(echo "$REPORT" | grep -c 'Criticality: Unknown')
+TOTAL_VULN_COUNT=$((LOW_VULN_COUNT + MEDIUM_VULN_COUNT + HIGH_VULN_COUNT + UNKNOWN_VULN_COUNT))
+
+# resolve state aliases
+test "$CRITICAL_STATES" == 'all' && CRITICAL_STATES='unknown,high,medium,low'
+test "$WARNING_STATES" == 'all' && WARNING_STATES='unknown,high,medium,low'
+
+# report and exit
+IFS=','
+for CRITICAL_STATE in $CRITICAL_STATES; do
+  STATE_COUNT=$(echo "$REPORT" | grep -ic "Criticality: ${CRITICAL_STATE}")
+  if [ $STATE_COUNT -gt 0 ]; then
+    echo "CRITICAL: ${TOTAL_VULN_COUNT} vulnerabilities found (${HIGH_VULN_COUNT} high, ${MEDIUM_VULN_COUNT} medium, ${LOW_VULN_COUNT} low, ${UNKNOWN_VULN_COUNT} unknown)"
+    exit 2
+  fi
+done
+
+for WARNING_STATE in $WARNING_STATES; do
+  STATE_COUNT=$(echo "$REPORT" | grep -ic "Criticality: ${WARNING_STATE}")
+  if [ $STATE_COUNT -gt 0 ]; then
+    echo "WARNING: ${TOTAL_VULN_COUNT} vulnerabilities found (${HIGH_VULN_COUNT} high, ${MEDIUM_VULN_COUNT} medium, ${LOW_VULN_COUNT} low, ${UNKNOWN_VULN_COUNT} unknown)"
+    exit 1
+  fi
+done
+
+for OK_STATE in $OK_STATES; do
+  STATE_COUNT=$(echo "$REPORT" | grep -ic "Criticality: ${OK_STATE}")
+  if [ $STATE_COUNT -gt 0 ]; then
+    echo "OK: ${TOTAL_VULN_COUNT} vulnerabilities found (${HIGH_VULN_COUNT} high, ${MEDIUM_VULN_COUNT} medium, ${LOW_VULN_COUNT} low, ${UNKNOWN_VULN_COUNT} unknown)"
+    exit 0
+  fi
+done
+
+if [ "$REPORT" == 'No vulnerabilities found' ]; then
+  echo 'OK: No vulnerabilities found'
+  exit 0
+fi
+
+# catch all
+echo 'UNKNOWN: Unable to parse bundle-audit report'
+exit 3

@@ -1,0 +1,13 @@
+source 'https://rubygems.org'
+
+# low
+gem 'net-ldap', '0.3.1'
+
+# medium
+gem 'jquery-rails', '2.0.3'
+
+# high
+gem 'sounder', '1.0.0'
+
+# unknown
+gem 'mail', '2.5.4'

@@ -1,0 +1,6 @@
+source 'https://rubygems.org'
+
+gem 'net-ldap', '0.15.0'
+gem 'jquery-rails', '4.2.1'
+gem 'sounder', '1.2.0'
+gem 'mail', '2.6.4'
