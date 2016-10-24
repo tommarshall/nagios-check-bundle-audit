@@ -1,0 +1,9 @@
+---
+language: bash
+
+install:
+  - gem install bundler-audit
+  - make setup
+
+script:
+  - make test
