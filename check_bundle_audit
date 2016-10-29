@@ -1,4 +1,4 @@
-# !/bin/sh
+#!/usr/bin/env bash
 
 #
 # check_bundle_audit - Nagios plugin for monitoring ruby applications for CVEs

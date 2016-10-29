@@ -71,4 +71,5 @@ define command {
 
 ## Dependencies
 
+* bash
 * [bundler-audit](https://github.com/rubysec/bundler-audit)
