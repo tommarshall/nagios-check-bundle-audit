@@ -111,7 +111,10 @@ if [ ! -f "${PROJECT_PATH}/Gemfile.lock" ]; then
 fi
 
 # update the ruby advisory db
-$BUNDLE_AUDIT_PATH update >/dev/null 2>&1
+if ! $BUNDLE_AUDIT_PATH update >/dev/null 2>&1; then
+  echo "UNKNOWN: Unable to update ruby-advisory-db"
+  exit $UNKNOWN
+fi
 
 # run bundle-audit
 REPORT=$(cd $PROJECT_PATH; $BUNDLE_AUDIT_PATH)

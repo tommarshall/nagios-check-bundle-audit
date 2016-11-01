@@ -32,6 +32,14 @@ load 'test_helper'
   assert_output "UNKNOWN: Unable to find bundle-audit"
 }
 
+@test "exits UNKNOWN if unable update the ruby advisory db" {
+  load_fixture clean
+  HOME='/root'
+  run $BASE_DIR/check_bundle_audit --path $TMP_DIRECTORY
+  assert_failure 3
+  assert_output "UNKNOWN: Unable to update ruby-advisory-db"
+}
+
 @test "exits UNKNOWN if unable to parse report" {
   load_fixture clean
   run $BASE_DIR/check_bundle_audit --path $TMP_DIRECTORY --bundle-audit-path /bin/echo
