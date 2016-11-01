@@ -69,6 +69,14 @@ define command {
  * `unknown`
  * `all` (alias for `low,medium,high,unknown`)
 
+### Troubleshooting
+
+```
+UNKNOWN: Unable to update ruby-advisory-db
+```
+
+`bundler-audit` downloads a copy of the [Ruby Advisory Database](https://github.com/rubysec/ruby-advisory-db) inside the user's home directory. This can cause issues if the user running the script does not have a writable home directory. See [#2](https://github.com/tommarshall/nagios-check-bundle-audit/issues/2) for details on how to resolve this.
+
 ## Dependencies
 
 * bash
