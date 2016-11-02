@@ -8,7 +8,7 @@ Nagios plugin to monitor ruby applications for security vulnerabilities via [bun
 
 Install the [bundler-audit](https://github.com/rubysec/bundler-audit) gem.
 
-Download the [check_bundle_audit](https://cdn.rawgit.com/tommarshall/nagios-check-bundle-audit/v0.2.0/check_bundle_audit) script and make it executable.
+Download the [check_bundle_audit](https://cdn.rawgit.com/tommarshall/nagios-check-bundle-audit/v0.3.0/check_bundle_audit) script and make it executable.
 
 Define a new `command` in the Nagios config, e.g.
 
@@ -68,6 +68,14 @@ define command {
  * `high`
  * `unknown`
  * `all` (alias for `low,medium,high,unknown`)
+
+### Troubleshooting
+
+```
+UNKNOWN: Unable to update ruby-advisory-db
+```
+
+`bundler-audit` downloads a copy of the [Ruby Advisory Database](https://github.com/rubysec/ruby-advisory-db) inside the user's home directory. This can cause issues if the user running the script does not have a writable home directory. See [#2](https://github.com/tommarshall/nagios-check-bundle-audit/issues/2) for details on how to resolve this.
 
 ## Dependencies
 
