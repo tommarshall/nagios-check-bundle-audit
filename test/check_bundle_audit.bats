@@ -176,8 +176,8 @@ load 'test_helper'
   [[ "$output" == "check_bundle_audit "?.?.? ]]
 }
 
-@test "-v is an alias for --version" {
-  run $BASE_DIR/check_bundle_audit -v
+@test "-V is an alias for --version" {
+  run $BASE_DIR/check_bundle_audit -V
   assert_success
   [[ "$output" == "check_bundle_audit "?.?.? ]]
 }
