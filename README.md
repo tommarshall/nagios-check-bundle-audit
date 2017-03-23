@@ -54,7 +54,7 @@ define command {
 -b  --bundle-audit-path        path to `bundle-audit` gem
 -w, --warning <criticalities>  comma seperated CVE criticalities to treat as WARNING
 -c, --critical <criticalities> comma seperated CVE criticalities to treat as CRITICAL
--v, --version                  output version
+-V, --version                  output version
 -h, --help                     output help information
 ```
 
