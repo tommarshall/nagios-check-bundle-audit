@@ -8,7 +8,7 @@ Nagios plugin to monitor ruby applications for security vulnerabilities via [bun
 
 Install the [bundler-audit](https://github.com/rubysec/bundler-audit) gem.
 
-Download the [check_bundle_audit](https://cdn.rawgit.com/tommarshall/nagios-check-bundle-audit/v0.4.0/check_bundle_audit) script and make it executable.
+Download the [check_bundle_audit](https://cdn.rawgit.com/tommarshall/nagios-check-bundle-audit/v0.5.0/check_bundle_audit) script and make it executable.
 
 Define a new `command` in the Nagios config, e.g.
 
