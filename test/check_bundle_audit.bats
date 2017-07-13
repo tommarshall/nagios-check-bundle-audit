@@ -153,6 +153,29 @@ load 'test_helper'
   assert_output "WARNING: 1 vulnerabilities found (1 high, 0 medium, 0 low, 0 unknown)"
 }
 
+# --ignore
+# ------------------------------------------------------------------------------
+@test "--ignore excludes a single specified advisory id" {
+  load_fixture dirty-all
+  run $BASE_DIR/check_bundle_audit -p $TMP_DIRECTORY --ignore "CVE-2014-0083"
+  assert_failure 2
+  assert_output "CRITICAL: 3 vulnerabilities found (1 high, 1 medium, 0 low, 1 unknown)"
+}
+
+@test "--ignore excludes multiple specified advisory ids" {
+  load_fixture dirty-all
+  run $BASE_DIR/check_bundle_audit -p $TMP_DIRECTORY --ignore "CVE-2015-1828 CVE-2015-9097 CVE-2014-0083 CVE-2013-5647"
+  assert_success
+  assert_output "OK: No vulnerabilities found"
+}
+
+@test "-i is an alias for --ignore" {
+  load_fixture dirty-all
+  run $BASE_DIR/check_bundle_audit -p $TMP_DIRECTORY -i "CVE-2014-0083"
+  assert_failure 2
+  assert_output "CRITICAL: 3 vulnerabilities found (1 high, 1 medium, 0 low, 1 unknown)"
+}
+
 # --bundle-audit-path
 # ------------------------------------------------------------------------------
 

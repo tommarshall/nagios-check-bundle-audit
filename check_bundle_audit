@@ -52,11 +52,14 @@ help() {
 
     ./check_bundle_audit -p /var/www/app -b /usr/local/bin/bundle-audit
 
+    ./check_bundle_audit -p /var/www/app -i "CVE-2016-4658 CVE-2014-0083"
+
   Options:
     -p, --path <path>              path to project
     -b  --bundle-audit-path        path to bundle-audit gem
     -w, --warning <criticalities>  comma seperated CVE criticalities to treat as WARNING
     -c, --critical <criticalities> comma seperated CVE criticalities to treat as CRITICAL
+    -i, --ignore <advisory ID(s)>  space seperated advisories to ignore
     -V, --version                  output version
     -h, --help                     output help information
 
@@ -78,6 +81,7 @@ while test $# -ne 0; do
     -b|--bundle-audit-path) BUNDLE_AUDIT_PATH=$1; shift ;;
     -w|--warning) WARNING_STATES=$1; shift ;;
     -c|--critical) CRITICAL_STATES=$1; shift ;;
+    -i|--ignore) IGNORE_ARG="--ignore ${1}"; shift ;;
     -V|--version) version; exit ;;
     -h|--help) help; exit ;;
     *)
@@ -117,7 +121,7 @@ if ! $BUNDLE_AUDIT_PATH update >/dev/null 2>&1; then
 fi
 
 # run bundle-audit
-REPORT=$(cd $PROJECT_PATH; $BUNDLE_AUDIT_PATH)
+REPORT=$(cd $PROJECT_PATH; $BUNDLE_AUDIT_PATH $IGNORE_ARG)
 
 # parse report
 LOW_VULN_COUNT=$(echo "$REPORT" | grep -c 'Criticality: Low')

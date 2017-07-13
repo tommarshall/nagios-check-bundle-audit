@@ -45,6 +45,9 @@ define command {
 
 # set full path to bundle-audit
 ./check_bundle_audit -p /var/www/app -b /usr/local/bin/bundle-audit
+
+# ignore advisories CVE-2016-4658 and CVE-2014-0083
+./check_bundle_audit -p /var/www/app -i "CVE-2016-4658 CVE-2014-0083"
 ```
 
 ### Options
@@ -54,6 +57,7 @@ define command {
 -b  --bundle-audit-path        path to `bundle-audit` gem
 -w, --warning <criticalities>  comma seperated CVE criticalities to treat as WARNING
 -c, --critical <criticalities> comma seperated CVE criticalities to treat as CRITICAL
+-i, --ignore <advisory ID(s)>  space seperated advisories to ignore
 -V, --version                  output version
 -h, --help                     output help information
 ```
