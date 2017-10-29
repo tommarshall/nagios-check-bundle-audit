@@ -9,7 +9,7 @@
 # https://github.com/tommarshall/nagios-plugin-bundle-audit
 #
 
-VERSION=0.5.0
+VERSION=0.6.0
 OK=0
 WARNING=1
 CRITICAL=2
