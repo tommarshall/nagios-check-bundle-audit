@@ -67,11 +67,11 @@ define command {
 * `-c/--critical` default is `high,unknown`.
 * `-w/--warning` default is `low,medium,high,unknown`.
 * Criticality levels:
- * `low`
- * `medium`
- * `high`
- * `unknown`
- * `all` (alias for `low,medium,high,unknown`)
+  * `low`
+  * `medium`
+  * `high`
+  * `unknown`
+  * `all` (alias for `low,medium,high,unknown`)
 
 ### Troubleshooting
 
